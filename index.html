@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+
+    <title>Mappy Coloring</title>
+    <meta name="description" content="Mappy Coloring" />
+    <meta name="author" content="Travis Ormsby" />
+
+    <link rel="stylesheet" href="css/styles.css" />
+
+    <!--js lib to allow pan/zoom of svg elements from https://github.com/ariutta/svg-pan-zoom-->
+    <script src="js/svg-pan-zoom.min.js"></script>
+  </head>
+
+  <body>
+    <div class="topnav">
+      <a class="active" href="#home">Home</a>
+      <a href="#news">Maps</a>
+      <a href="#contact">Source Code</a>
+    </div>
+    <div id="main">
+      <div id="contentWrapper">
+        <h1></h1>
+        <div id="svg-container">
+          <object
+            id="svg"
+            type="image/svg+xml"
+            alt="svg test"
+            data="img/asian_parsed.svg"
+            colorRamp="OrRd"
+          ></object>
+        </div>
+        <div id="legend">
+          <div id="buttons"></div>
+        </div>
+      </div>
+    </div>
+  </body>
+  <!--custom js-->
+  <script src="js/scripts.js"></script>
+</html>

@@ -1,0 +1,17 @@
+{
+  "alt": "Household Size",
+  "data": "img/hhsize.svg",
+  "colorRamp": "YlGnBu",
+  "legendCaption": "Average Number of People per Household",
+  "break_vals": [
+    "2.25",
+    "2.32",
+    "2.35",
+    "2.39",
+    "2.43",
+    "2.48",
+    "2.52",
+    "2.67",
+    "2.86"
+  ]
+}

@@ -15,21 +15,24 @@
   </head>
 
   <body>
-    <div class="topnav">
-      <a
-        class="active"
-        href="index.html"
-        >Home</a
-      >
-      <a
-        href="https://github.com/travisormsby/map-coloring-book"
-        >Maps</a
-      >
-      <a
-        href="https://github.com/travisormsby/map-coloring-book"
-        target="_blank"
-        >Source Code</a
-      >
+    <div class="navbar">
+      <a href="index.html">Home</a>
+      <div class="dropdown">
+        <button class="dropbtn">Maps 
+          <i class="down-triangle">&#9660;</i>
+        </button>
+        <div class="dropdown-content">
+        </div>
+      </div> 
+      <div class="dropdown">
+        <button class="dropbtn">Instructions 
+          <i class="down-triangle">&#9660;</i>
+        </button>
+        <div class="dropdown-content instructions"><p>Select a map from the Maps dropdown</p><p>Click on one of the color categories below the map.</p><p>The map will highlight counties in that category.</p><p>Click on a highligted county to color it in.</p>
+        </div>
+      </div> 
+      <a href="https://github.com/travisormsby/map-coloring-book" target="_blank">Source Code <img src="img\external-link-white.png"></a>
+      
     </div>
     <div id="main">
       <div class="contentWrapper">

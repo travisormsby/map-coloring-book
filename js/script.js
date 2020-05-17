@@ -1,3 +1,56 @@
+// parse URL parameters
+const urlParams = new URLSearchParams (window.location.search);
+var page = urlParams.get ('map');
+contentDiv = document.querySelector ('.contentWrapper');
+title = document.createElement ('h1');
+contentDiv.appendChild (title);
+
+// get the metadata on all maps (fetch returns a promise, not an object)
+const mapData = fetch (`./img/map_data.json`).then (content => {
+  return content.json ();
+});
+
+// function for sorting array of object (to get maps in order by description)
+function compareValues (key, order = 'asc') {
+  return function innerSort (a, b) {
+    if (!a.hasOwnProperty (key) || !b.hasOwnProperty (key)) {
+      // property doesn't exist on either object
+      return 0;
+    }
+
+    const varA = typeof a[key] === 'string' ? a[key].toUpperCase () : a[key];
+    const varB = typeof b[key] === 'string' ? b[key].toUpperCase () : b[key];
+
+    let comparison = 0;
+    if (varA > varB) {
+      comparison = 1;
+    } else if (varA < varB) {
+      comparison = -1;
+    }
+    return order === 'desc' ? comparison * -1 : comparison;
+  };
+}
+
+// populate map dropdown list
+dropdownList = [];
+mapData
+  .then (content => {
+    mapList = Object.keys (content);
+    mapList.forEach (map => {
+      mapObject = {description: content[map].alt, name: map};
+      dropdownList.push (mapObject);
+    });
+    return dropdownList.sort (compareValues ('description'));
+  })
+  .then (result => {
+    result.forEach (mapObject => {
+      mapLink = document.createElement ('a');
+      mapLink.href = `index.html?map=${mapObject.name}`;
+      mapLink.innerText = mapObject.description;
+      document.querySelector ('.dropdown-content').appendChild (mapLink);
+    });
+  });
+
 // some globals for all functions to access
 var svgObject; // svg document
 var colorChoice; // color to fill with
@@ -2182,25 +2235,14 @@ var colorRamps = {
   },
 };
 
-// parse URL parameters
-const urlParams = new URLSearchParams (window.location.search);
-var page = urlParams.get ('map');
-contentDiv = document.querySelector ('.contentWrapper');
-title = document.createElement ('h1');
-contentDiv.appendChild (title);
-
-// get the metadata on all maps (fetch returns a promise, not an object)
-const mapData = fetch (`./img/map_data.json`).then (content => {
-  return content.json ();
-});
-
 // load the home page if no URL params, selected map page otherwise
 if (!page) {
   title.innerText = 'Minnesota Census Coloring Book';
   introText = document.createElement ('div');
   introText.className = 'introText';
-  introText.innerHTML =
-    'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.';
+
+  introText.innerHTML = `<p>Minnesota is a large and diverse state. Every 10 years, the US Census captures some of that diversity in huge data tables. But the tables are hard to get and even harder to read. Most people won't be able use them to find out anything interesting.</p><p>Instead, you can use the maps in this coloring book to learn more about the people of Minneosta. Several different categories of census information for each of the state's 87 counties are available for you to map. Click on the "Maps" dropdown menu at the top of the page and select one of the different maps to color. </p><p>When the map loads, click on one of the color categories below the map. The map will highlight counties in that category. Just click on a highlighted county to color it in. See if you can find any patterns in the data. Do certain things tend to go together? See if you can see any problems with the way counties are grouped up. Do you think you would see a different pattern if there were a different number of groups?</p><p>Of course, not everything has to be educational. Maybe you just need something to help you relax and wind down from the day. Spend a few minutes getting lost in these maps of Minnesota to help center yourself.</p><p>If you like this project, you can view the source code on GitHub. You'll need some experience with ArcGIS Pro and a little bit of Python, but you can use the code to make and share your own coloring book maps. Census data for this project come from the 2010 Census, downloaded from the <a href="https://www.nhgis.org/" target="_blank">National Historic Geographic Information System <img src="img/external-link-black.png"/></a>.</p>`;
+
   contentDiv.appendChild (introText);
 } else {
   svgContainerDiv = document.createElement ('div');
@@ -2217,6 +2259,7 @@ if (!page) {
       svgObject.setAttribute ('colorRamp', content.colorRamp);
       svgContainerDiv.appendChild (svgObject);
       title.innerText = content.alt;
+
       legend = document.createElement ('div');
       legend.id = 'legend';
       contentDiv.appendChild (legend);
@@ -2278,6 +2321,7 @@ if (!page) {
 
         featureColors.forEach ((featureColor, i) => {
           colorButton = document.createElement ('button');
+          colorButton.className = 'button';
           colorButton.id = featureColor;
           colorButton.setAttribute ('onclick', 'colorSelect(this.id)');
           colorButton.style.backgroundColor = colorMap[featureColor];

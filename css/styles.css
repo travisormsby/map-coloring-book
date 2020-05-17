@@ -9,29 +9,74 @@ body {
   height: calc(100% - 60px);
 }
 
-.topnav {
+.navbar {
   overflow: hidden;
-  background-color: #333;
-  max-height: 60px;
+  background-color: #003865;
 }
 
-.topnav a {
+.navbar a {
   float: left;
-  color: #f2f2f2;
+  font-size: 16px;
+  color: white;
   text-align: center;
   padding: 14px 16px;
   text-decoration: none;
-  font-size: 17px;
 }
 
-.topnav a:hover {
-  background-color: #ddd;
+.dropdown {
+  float: left;
+  overflow: hidden;
+}
+
+.dropdown .dropbtn {
+  font-size: 16px;
+  border: none;
+  outline: none;
+  color: white;
+  padding: 14px 16px;
+  background-color: inherit;
+  font-family: inherit;
+  margin: 0;
+}
+
+.navbar a:hover,
+.dropdown:hover .dropbtn {
+  background-color: #78be21;
   color: black;
 }
 
-.topnav a.active {
-  background-color: #4caf50;
-  color: white;
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #f9f9f9;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  z-index: 1;
+}
+
+.dropdown-content a {
+  float: none;
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+  text-align: left;
+}
+
+.dropdown-content a:hover {
+  background-color: #ddd;
+}
+
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+
+.instructions {
+  padding: 0px 10px;
+}
+
+.instructions p {
+  margin: 5px 0px;
 }
 
 .contentWrapper {
@@ -41,6 +86,10 @@ body {
   flex-direction: column;
   align-items: center;
   flex: 10 0 auto;
+}
+
+.down-triangle {
+  font-size: x-small;
 }
 
 h1 {
@@ -91,19 +140,14 @@ h2 {
 
 #buttons {
   display: flex;
-  align-items: center;
+  align-items: stretch;
 }
 
-button {
+.button {
   font-size: 1em;
   font-weight: bold;
   font-family: inherit;
-  min-height: 40px;
-  min-width: 40px;
   border: 1px solid black;
   margin: 5px;
-}
-
-.invisible {
-  display: none;
+  padding: 5px 3px;
 }

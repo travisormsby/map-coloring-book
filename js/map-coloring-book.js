@@ -2353,12 +2353,14 @@ function colorSelect (colorClass) {
 
   deselected.forEach (node => {
     node.setAttributeNS (null, 'fill', '#ffffff');
+    node.style.cursor = 'default';
   });
 
   // highlight uncolored elements of chosen color
   colorChoice = colorClass;
   let selected = svgObject.querySelectorAll (`.${colorClass}[fill="#ffffff"]`);
   selected.forEach (node => {
+    node.style.cursor = 'pointer';
     node.setAttributeNS (null, 'fill', 'url(#OvalPattern)');
   });
 }

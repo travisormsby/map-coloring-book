@@ -1,9 +1,3 @@
-// parse URL parameters
-console.log ('test');
-const urlParams = new URLSearchParams (window.location.search);
-var page = urlParams.get ('map');
-console.log (page);
-
 // some globals for all functions to access
 var svgObject; // svg document
 var colorChoice; // color to fill with
@@ -2188,71 +2182,119 @@ var colorRamps = {
   },
 };
 
-console.log ('after json');
+// parse URL parameters
+const urlParams = new URLSearchParams (window.location.search);
+var page = urlParams.get ('map');
+contentDiv = document.querySelector ('.contentWrapper');
+title = document.createElement ('h1');
+contentDiv.appendChild (title);
+if (!page) {
+  title.innerText = 'Minnesota Census Coloring Book';
+  introText = document.createElement ('div');
+  introText.className = 'introText';
+  introText.innerHTML =
+    'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.';
+  contentDiv.appendChild (introText);
+} else {
+  const mapData = fetch (`./img/${page}.svg.json`).then (content => {
+    return content.json ();
+  });
 
-// after svg is actually loaded, use it to populate rest of page
-window.addEventListener ('load', function () {
-  svg = document.getElementById ('svg');
-  if (svg) {
-    // get access to the svg doc
-    svgObject = document.getElementById ('svg').contentDocument;
-    document.querySelector ('h1').innerHTML = svgObject.title;
+  svgContainerDiv = document.createElement ('div');
+  svgContainerDiv.id = 'svg-container';
+  contentDiv.appendChild (svgContainerDiv);
 
-    // get an array of all the colors used in the map
-    featureColors = [];
-    features = svgObject.querySelectorAll ("[id^='feature'");
-    features.forEach (feature => {
-      featureColor = feature.getAttribute ('class');
-      if (!featureColors.includes (featureColor)) {
-        featureColors.push (featureColor);
-      }
+  mapData
+    .then (content => {
+      svgObject = document.createElement ('object');
+      svgObject.id = 'svg';
+      svgObject.type = 'image/svg+xml';
+      svgObject.data = content.data;
+      svgObject.setAttribute ('colorRamp', content.colorRamp);
+      svgContainerDiv.appendChild (svgObject);
+      title.innerText = content.alt;
+      legend = document.createElement ('div');
+      legend.id = 'legend';
+      contentDiv.appendChild (legend);
+      label = document.createElement ('div');
+      label.id = 'label';
+      legend.appendChild (label);
+      legendCaption = document.createElement ('h2');
+      legendCaption.innerText = content.legendCaption;
+      label.appendChild (legendCaption);
+      buttons = document.createElement ('div');
+      buttons.id = 'buttons';
+      legend.appendChild (buttons);
+      return [svgObject, content.break_vals];
+    })
+    .then (result => {
+      svg = result[0];
+      svg.onload = event => {
+        // get access to the svg doc
+        svgObject = document.getElementById ('svg').contentDocument;
+        document.querySelector ('h1').innerHTML = svgObject.title;
+
+        // get an array of all the colors used in the map
+        featureColors = [];
+        features = svgObject.querySelectorAll ("[id^='feature'");
+        features.forEach (feature => {
+          featureColor = feature.getAttribute ('class');
+          if (!featureColors.includes (featureColor)) {
+            featureColors.push (featureColor);
+          }
+        });
+
+        // the colors can be ordered b/c they are greyscale
+        featureColors.sort ().reverse ();
+
+        // map the colors in the features to the selected color brewer ramp
+        colorRamp = svg.getAttribute ('colorRamp');
+        colorRampColors = colorRamps[colorRamp][featureColors.length];
+        if (svg.getAttribute ('colorRampReverse') === 'true') {
+          colorRampColors.reverse ();
+        }
+
+        try {
+          featureColors.forEach (
+            (featureColor, i) => (colorMap[featureColor] = colorRampColors[i])
+          );
+        } catch (err) {
+          console.error (
+            `Mismatch between the number of classes in the map and the number of categories in the selected color ramp. Choose a different ramp or export a map with a different number of classes`
+          );
+          // map in original greyscale instead
+          featureColors.forEach (
+            (featureColor, i) =>
+              (colorMap[featureColor] = `#${featureColors[i].slice (3)}`)
+          );
+        }
+
+        // put a button for each color in the bottom to highlight
+        buttonContainer = document.querySelector ('#buttons');
+
+        featureColors.forEach ((featureColor, i) => {
+          colorButton = document.createElement ('button');
+          colorButton.id = featureColor;
+          colorButton.setAttribute ('onclick', 'colorSelect(this.id)');
+          colorButton.style.backgroundColor = colorMap[featureColor];
+          colorButton.style.color = colorContrast (colorMap[featureColor]);
+          if (i === 0) {
+            colorButton.innerText = `less than ${result[1][i]}`;
+          } else {
+            colorButton.innerText = `${result[1][i - 1]} to ${result[1][i]}`;
+          }
+
+          buttonContainer.appendChild (colorButton);
+        });
+
+        // call the pan/zoom script on svg load
+        svgPanZoom ('#svg', {
+          controlIconsEnabled: true,
+          zoomScaleSensitivity: 0.5,
+        });
+      };
     });
-
-    // the colors can be ordered b/c they are greyscale
-    featureColors.sort ().reverse ();
-
-    // map the colors in the features to the selected color brewer ramp
-    colorRamp = svg.getAttribute ('colorRamp');
-    colorRampColors = colorRamps[colorRamp][featureColors.length];
-    if (svg.getAttribute ('colorRampReverse') === 'true') {
-      colorRampColors.reverse ();
-    }
-
-    try {
-      featureColors.forEach (
-        (featureColor, i) => (colorMap[featureColor] = colorRampColors[i])
-      );
-    } catch (err) {
-      console.error (
-        `Mismatch between the number of classes in the map and the number of categories in the selected color ramp. Choose a different ramp or export a map with a different number of classes`
-      );
-      // map in original greyscale instead
-      featureColors.forEach (
-        (featureColor, i) =>
-          (colorMap[featureColor] = `#${featureColors[i].slice (3)}`)
-      );
-    }
-
-    // put a button for each color in the bottom to highlight
-    buttonContainer = document.querySelector ('#buttons');
-
-    featureColors.forEach (featureColor => {
-      colorButton = document.createElement ('button');
-      colorButton.id = featureColor;
-      colorButton.innerText = 'Test';
-      colorButton.setAttribute ('onclick', 'colorSelect(this.id)');
-      colorButton.style.backgroundColor = colorMap[featureColor];
-      colorButton.style.color = colorContrast (colorMap[featureColor]);
-      buttonContainer.appendChild (colorButton);
-    });
-
-    // call the pan/zoom script on svg load
-    svgPanZoom ('#svg', {
-      controlIconsEnabled: true,
-      zoomScaleSensitivity: 0.5,
-    });
-  }
-});
+}
 
 // choose a color and highlight polygons that should be colored that value
 function colorSelect (colorClass) {
@@ -2273,15 +2315,6 @@ function colorSelect (colorClass) {
   });
 }
 
-// color elements if it should be the selected color
-function color (id, colorClass) {
-  if (window.parent.colorChoice === colorClass) {
-    document
-      .getElementById (id)
-      .setAttribute ('fill', window.parent.colorMap[colorClass]);
-  }
-}
-
 // given a color in an rgb or hex string, create a color that will contrast with it
 function colorContrast (inColor) {
   if (inColor.slice (0, 3) === 'rgb') {
@@ -2300,5 +2333,3 @@ function colorContrast (inColor) {
   var outColor = brightness > 125000 ? 'black' : 'white';
   return outColor;
 }
-
-console.log ('at end');

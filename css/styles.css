@@ -34,7 +34,7 @@ body {
   color: white;
 }
 
-#contentWrapper {
+.contentWrapper {
   height: 100%;
   width: 100%;
   display: flex;
@@ -47,6 +47,10 @@ h1 {
   flex: 0 0 auto;
   min-width: 0;
   min-height: 0;
+}
+
+.introText {
+  width: 90%;
 }
 
 #svg-container {
@@ -81,17 +85,25 @@ path[id^='feature'] {
   margin-bottom: 1.33em;
 }
 
+h2 {
+  font-size: 1em;
+}
+
 #buttons {
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
 }
 
 button {
-  font-size: x-large;
+  font-size: 1em;
+  font-weight: bold;
   font-family: inherit;
   min-height: 40px;
   min-width: 40px;
   border: 1px solid black;
   margin: 5px;
+}
+
+.invisible {
+  display: none;
 }

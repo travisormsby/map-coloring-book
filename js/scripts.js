@@ -1,3 +1,9 @@
+// parse URL parameters
+console.log ('test');
+const urlParams = new URLSearchParams (window.location.search);
+var page = urlParams.get ('map');
+console.log (page);
+
 // some globals for all functions to access
 var svgObject; // svg document
 var colorChoice; // color to fill with
@@ -2182,6 +2188,8 @@ var colorRamps = {
   },
 };
 
+console.log ('after json');
+
 // after svg is actually loaded, use it to populate rest of page
 window.addEventListener ('load', function () {
   svg = document.getElementById ('svg');
@@ -2292,3 +2300,5 @@ function colorContrast (inColor) {
   var outColor = brightness > 125000 ? 'black' : 'white';
   return outColor;
 }
+
+console.log ('at end');

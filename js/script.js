@@ -2188,6 +2188,13 @@ var page = urlParams.get ('map');
 contentDiv = document.querySelector ('.contentWrapper');
 title = document.createElement ('h1');
 contentDiv.appendChild (title);
+
+// get the metadata on all maps (fetch returns a promise, not an object)
+const mapData = fetch (`./img/map_data.json`).then (content => {
+  return content.json ();
+});
+
+// load the home page if no URL params, selected map page otherwise
 if (!page) {
   title.innerText = 'Minnesota Census Coloring Book';
   introText = document.createElement ('div');
@@ -2196,16 +2203,13 @@ if (!page) {
     'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.';
   contentDiv.appendChild (introText);
 } else {
-  const mapData = fetch (`./img/${page}.svg.json`).then (content => {
-    return content.json ();
-  });
-
   svgContainerDiv = document.createElement ('div');
   svgContainerDiv.id = 'svg-container';
   contentDiv.appendChild (svgContainerDiv);
 
   mapData
-    .then (content => {
+    .then (full_content => {
+      content = full_content[page];
       svgObject = document.createElement ('object');
       svgObject.id = 'svg';
       svgObject.type = 'image/svg+xml';

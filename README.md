@@ -1,6 +1,6 @@
 # Map Coloring Book 
 
-You can use the code in this repo to make a map-based color-by-numbers web application like the <a href="https://travisormsby.com/map-coloring-book">Minnesota Census Coloring Book</a>.
+You can use the code in this repo to make a map-based color-by-numbers web application like the <a href="https://travisormsby.github.io/map-coloring-book/index.html">Minnesota Census Coloring Book</a>.
 
 ## Step 1: Create Map
 The Python and JavaScript code in this repo assume that you are creating maps in ArcGIS Pro. You can create them in other software that is capable of exporting to .svg format, but you'll probably need to rewrite most of the Python and at least some of the JavaScript.
